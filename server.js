@@ -32,23 +32,53 @@ app.use(function (req, res, next) {
 })
 
 app.route('/api/building').get( function(req, res) {
-    console.log("endpoint hit");
     const requestedDay = getDayString(req.query.day);
     const requestedBuilding = req.query.building;
     const rtCollection = client.db('nu-classrooms').collection('roomtimes');
-    let result = {};
-    rtCollection.find({'weekDay':requestedDay}).each(function(err, doc) {
+    rtCollection.find({'weekDay':requestedDay, 'building':{$regex : requestedBuilding}}).toArray(function(err, items) {
         if(err) { console.log(err); }
-        else { 
-            if(result[doc.roomKey] == null) {
-                result[doc.roomKey].times = [];
+        else {
+            let result = {};
+            for(doc_idx in items) {
+                let doc = items[doc_idx];
+                if(result[doc.roomKey] == undefined) {
+                    result[doc.roomKey] = {};
+                    result[doc.roomKey].times = [];
+                    result[doc.roomKey].building = doc.building;
+                    result[doc.roomKey].room = doc.roomKey.substring(4);
+                }
+                let timePair = {};
+                timePair.startTime = doc.startTime;
+                timePair.endTime = doc.endTime;
+                if(!timeAlreadyExists(result[doc.roomKey].times, timePair)) {
+                    result[doc.roomKey].times.push(timePair);
+                }
             }
-            result[doc.roomKey].times.push(doc.)
+            res.send(result);
         }
     })
 })
 
+/**
+ * Returns whether the provided timePair already exists in the list.
+ * @param {*} timeList list to check
+ * @param {*} timePair time pair to check
+ */
+function timeAlreadyExists(timeList, timePair) {
+    for(time in timeList) {
+        if(timeList[time].startTime === timePair.startTime) {
+            return true;
+        }
+    }
+    return false;
+};
 
+
+/**
+ * Returns the day string for the int that is passed in. 
+ * 0 is Sunday, 6 is Saturday.
+ * @param {} i Integer representation of week day.
+ */
 function getDayString(i) {
     let result = "";
     switch(i) {
