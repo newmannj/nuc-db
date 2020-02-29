@@ -15,12 +15,12 @@ app.listen(8000, ()=> {
     console.log("Listening on port 8000!");
 })
 
-
+/*
 client.connect(function(err, db) {
     if (err) {console.log(err); }
     else { console.log("Connected to database!"); }
 })
-
+*/
 
 
 app.use(function (req, res, next) {
