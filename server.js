@@ -11,27 +11,18 @@ app.use(bodyParser());
 app.use(bodyParser.json({limit:'5mb'}));
 app.use(bodyParser.urlencoded({extended:true}));
 
-app.listen(8000, ()=> {
-    console.log("Listening on port 8000!");
+app.listen(3000, ()=> {
+    console.log("Listening on port 3000!");
 })
 
-/*
+
 client.connect(function(err, db) {
     if (err) {console.log(err); }
     else { console.log("Connected to database!"); }
 })
-*/
 
 
-app.use(function (req, res, next) {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET');
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    next();
-})
-
-app.route('/', function(res,req) {
+app.get("/", function(req,res) {
     res.send("Hello World");
 })
 
