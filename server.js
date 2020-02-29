@@ -31,6 +31,10 @@ app.use(function (req, res, next) {
     next();
 })
 
+app.route('/', function(res,req)) {
+    res.send("Hello World");
+}
+
 app.route('/api/building').get( function(req, res) {
     const requestedDay = getDayString(req.query.day);
     const requestedBuilding = req.query.building;
