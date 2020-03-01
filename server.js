@@ -11,21 +11,39 @@ app.use(bodyParser());
 app.use(bodyParser.json({limit:'5mb'}));
 app.use(bodyParser.urlencoded({extended:true}));
 
+/**
+ * For some reason nginx doesn't like port 8000??
+ */
 app.listen(3000, ()=> {
     console.log("Listening on port 3000!");
 })
 
-
+/**
+ * Connect to database.
+ */
 client.connect(function(err, db) {
     if (err) {console.log(err); }
     else { console.log("Connected to database!"); }
 })
 
-
-app.get("/", function(req,res) {
-    res.send("Hello World");
+app.route('/api/classrooms').get( function(req, res) {
+    const requestedDay = getDayString(req.query.day);
+    const rtCollection = client.db('nu-classrooms').collection('roomtimes');
+    rtCollection.find({'weekDay':requestedDay}).toArray(function(err, items){
+        if(err) {console.log(err)}
+        else {
+            let result = {};
+            for(doc_idx in items) {
+                result = collectResults(result, items[doc_idx]);
+            }
+            res.send(result);
+        }
+    })
 })
 
+/**
+ * API route for getting current rooms from a building on a specific day.
+ */
 app.route('/api/building').get( function(req, res) {
     const requestedDay = getDayString(req.query.day);
     const requestedBuilding = req.query.building;
@@ -35,24 +53,38 @@ app.route('/api/building').get( function(req, res) {
         else {
             let result = {};
             for(doc_idx in items) {
-                let doc = items[doc_idx];
-                if(result[doc.roomKey] == undefined) {
-                    result[doc.roomKey] = {};
-                    result[doc.roomKey].times = [];
-                    result[doc.roomKey].building = doc.building;
-                    result[doc.roomKey].room = doc.roomKey.substring(4);
-                }
-                let timePair = {};
-                timePair.startTime = doc.startTime;
-                timePair.endTime = doc.endTime;
-                if(!timeAlreadyExists(result[doc.roomKey].times, timePair)) {
-                    result[doc.roomKey].times.push(timePair);
-                }
+                result = collectResults(result, items[doc_idx]);
             }
             res.send(result);
         }
     })
 })
+
+/**
+ * Handles adding doc correctly to the result map. If the class in doc is present,
+ * it will append to the times list. Otherwise, it will create a new entry.
+ * 
+ * @param {*} resultMap map to append to
+ * @param {*} doc doc to check.
+ */
+function collectResults(resultMap, doc) {
+    if(!(doc.building == "none")) {
+        if(resultMap[doc.roomKey] == undefined) {
+            resultMap[doc.roomKey] = {};
+            resultMap[doc.roomKey].times = [];
+            resultMap[doc.roomKey].building = doc.building;
+            resultMap[doc.roomKey].room = doc.roomKey.substring(4);
+        }
+        let timePair = {};
+        timePair.startTime = doc.startTime;
+        timePair.endTime = doc.endTime;
+        if(!timeAlreadyExists(resultMap[doc.roomKey].times, timePair)) {
+            resultMap[doc.roomKey].times.push(timePair);
+        }
+
+    }
+    return resultMap;
+}
 
 /**
  * Returns whether the provided timePair already exists in the list.
