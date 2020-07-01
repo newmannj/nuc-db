@@ -7,7 +7,6 @@ var url = "mongodb://127.0.0.1:27017/nu-classrooms";
 const client = new MongoClient(url);
 
 var app = express();
-app.use(bodyParser());
 app.use(bodyParser.json({limit:'5mb'}));
 app.use(bodyParser.urlencoded({extended:true}));
 
