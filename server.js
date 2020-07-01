@@ -22,8 +22,8 @@ app.use(function (req, res, next) {
 /**
  * For some reason nginx doesn't like port 8000??
  */
-app.listen(3000, ()=> {
-    console.log("Listening on port 3000!");
+app.listen(8000, ()=> {
+    console.log("Listening on port 8000!");
 })
 
 /**
@@ -55,8 +55,9 @@ app.route('/api/classrooms').get( function(req, res) {
 app.route('/api/building').get( function(req, res) {
     const requestedDay = getDayString(req.query.day);
     const requestedBuilding = req.query.building;
+    
     const rtCollection = client.db('nu-classrooms').collection('roomtimes');
-    rtCollection.find({'weekDay':requestedDay, 'building':{$regex : requestedBuilding}}).toArray(function(err, items) {
+    rtCollection.find({'weekDay':requestedDay, 'building': new RegExp(requestedBuilding, 'i')}).toArray(function(err, items) {
         if(err) { console.log(err); }
         else {
             let result = {};
