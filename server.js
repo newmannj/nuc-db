@@ -2,7 +2,7 @@ var MongoClient = require('mongodb').MongoClient;
 var express = require('express');
 var bodyParser = require('body-parser');
 
-var url = "mongodb://127.0.0.1:27017/nu-classrooms";
+var url = "mongodb://127.0.0.1:27017/nuc-classrooms";
 
 const client = new MongoClient(url);
 
@@ -35,7 +35,7 @@ client.connect(function(err, db) {
 
 app.route('/api/classrooms').get( function(req, res) {
     const requestedDay = getDayString(req.query.day);
-    const rtCollection = client.db('nu-classrooms').collection('roomtimes');
+    const rtCollection = client.db('nuc-classrooms').collection('classrooms');
     rtCollection.find({'weekDay':requestedDay}).toArray(function(err, items){
         if(err) {console.log(err)}
         else {
@@ -55,7 +55,7 @@ app.route('/api/building').get( function(req, res) {
     const requestedDay = getDayString(req.query.day);
     const requestedBuilding = req.query.building;
     
-    const rtCollection = client.db('nu-classrooms').collection('roomtimes');
+    const rtCollection = client.db('nuc-classrooms').collection('classrooms');
     rtCollection.find({'weekDay':requestedDay, 'building': new RegExp(requestedBuilding, 'i')}).toArray(function(err, items) {
         if(err) { console.log(err); }
         else {
