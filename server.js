@@ -81,47 +81,6 @@ app.route('/api/building').get( function(req, res) {
 })
 
 /**
- * Handles adding doc correctly to the result map. If the class in doc is present,
- * it will append to the times list. Otherwise, it will create a new entry.
- * 
- * @param {*} resultMap map to append to
- * @param {*} doc doc to check.
- */
-function collectResults(resultMap, doc) {
-    if(!(doc.building == "none")) {
-        if(resultMap[doc.roomKey] == undefined) {
-            resultMap[doc.roomKey] = {};
-            resultMap[doc.roomKey].times = [];
-            resultMap[doc.roomKey].building = doc.building;
-            resultMap[doc.roomKey].room = doc.roomKey.substring(4);
-        }
-        let timePair = {};
-        timePair.startTime = doc.startTime;
-        timePair.endTime = doc.endTime;
-        if(!timeAlreadyExists(resultMap[doc.roomKey].times, timePair)) {
-            resultMap[doc.roomKey].times.push(timePair);
-        }
-
-    }
-    return resultMap;
-}
-
-/**
- * Returns whether the provided timePair already exists in the list.
- * @param {*} timeList list to check
- * @param {*} timePair time pair to check
- */
-function timeAlreadyExists(timeList, timePair) {
-    for(time in timeList) {
-        if(timeList[time].startTime === timePair.startTime) {
-            return true;
-        }
-    }
-    return false;
-};
-
-
-/**
  * Returns the day string for the int that is passed in. 
  * 0 is Sunday, 6 is Saturday.
  * @param {} i Integer representation of week day.
