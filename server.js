@@ -36,12 +36,18 @@ client.connect(function(err, db) {
 app.route('/api/classrooms').get( function(req, res) {
     const requestedDay = getDayString(req.query.day);
     const rtCollection = client.db('nuc-classrooms').collection('classrooms');
-    rtCollection.find({'weekDay':requestedDay}).toArray(function(err, items){
+    rtCollection.find({}).toArray((err, items) => {
         if(err) {console.log(err)}
         else {
             let result = {};
             for(doc_idx in items) {
-                result = collectResults(result, items[doc_idx]);
+                if(items[doc_idx][requestedDay]) {
+                    const key = items[doc_idx]._id;
+                    result[key] = {};
+                    result[key].times = items[doc_idx][requestedDay];
+                    result[key].building = items[doc_idx]['building'];
+                    result[key].room = items[doc_idx]['room'];
+                }
             }
             res.send(result);
         }
@@ -56,12 +62,18 @@ app.route('/api/building').get( function(req, res) {
     const requestedBuilding = req.query.building;
     
     const rtCollection = client.db('nuc-classrooms').collection('classrooms');
-    rtCollection.find({'weekDay':requestedDay, 'building': new RegExp(requestedBuilding, 'i')}).toArray(function(err, items) {
+    rtCollection.find({'building': new RegExp(requestedBuilding, 'i')}).toArray(function(err, items) {
         if(err) { console.log(err); }
         else {
             let result = {};
             for(doc_idx in items) {
-                result = collectResults(result, items[doc_idx]);
+                if(items[doc_idx][requestedDay]) {
+                    const key = items[doc_idx]._id;
+                    result[key] = {};
+                    result[key].times = items[doc_idx][requestedDay];
+                    result[key].building = items[doc_idx]['building'];
+                    result[key].room = items[doc_idx]['room'];
+                }
             }
             res.send(result);
         }
@@ -118,25 +130,25 @@ function getDayString(i) {
     let result = "";
     switch(i) {
         case "0":
-            result = "Sunday";
+            result = "sunday";
             break;
         case "1":
-            result = "Monday";
+            result = "monday";
             break;
         case "2":
-            result = "Tuesday";
+            result = "tuesday";
             break;
         case "3":
-            result = "Wednesday";
+            result = "wednesday";
             break;
         case "4":
-            result = "Thursday";
+            result = "thursday";
             break;
         case "5":
-            result = "Friday";
+            result = "friday";
             break;
         case "6":
-            result = "Saturday";
+            result = "saturday";
             break;
         default:
             result = "fail"
