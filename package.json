@@ -1,27 +1,20 @@
 {
-  "name": "nuc-db",
+  "name": "test-azure",
   "version": "1.0.0",
-  "description": "Server for nuclassrooms project.",
+  "description": "",
   "main": "server.js",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
-    "mongodb": "^3.5.4"
+    "mongodb": "^3.5.9",
+    "path": "^0.12.7"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "forever start server.js",
-    "start-local": "node server.js"
+    "start": "cd ../client && npm run build && cd ../server && npm install && node server.js",
+    "dev": "node server.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/newmannj/nuc-db.git"
-  },
-  "author": "Joseph Newmann",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/newmannj/nuc-db/issues"
-  },
-  "homepage": "https://github.com/newmannj/nuc-db#readme"
+  "author": "",
+  "license": "ISC"
 }
