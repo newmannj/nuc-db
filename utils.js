@@ -35,21 +35,25 @@ function getDayString(i) {
 }
 
 function collectGetResults(items, requestedDay) {
-    let result = {};
+    let result = {
+        'roomCount':0,
+        'rooms':{}
+    };
     for(doc_idx in items) {
         if(items[doc_idx][requestedDay]) {
             const key = items[doc_idx]._id;
-            result[key] = {};
-            result[key].times = items[doc_idx][requestedDay];
-            result[key].building = items[doc_idx]['building'];
-            result[key].room = items[doc_idx]['room'];
+            result['rooms'][key] = {};
+            result['rooms'][key].times = items[doc_idx][requestedDay];
+            result['rooms'][key].building = items[doc_idx]['building'];
+            result['rooms'][key].room = items[doc_idx]['room'];
         } else {
             const key = items[doc_idx]._id;
-            result[key] = {};
-            result[key].times = [];
-            result[key].building = items[doc_idx]['building'];
-            result[key].room = items[doc_idx]['room'];
+            result['rooms'][key] = {};
+            result['rooms'][key].times = [];
+            result['rooms'][key].building = items[doc_idx]['building'];
+            result['rooms'][key].room = items[doc_idx]['room'];
         }
+        result['roomCount'] += 1;
     }
     return result;
 }
