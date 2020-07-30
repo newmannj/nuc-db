@@ -28,7 +28,7 @@ function getDayString(i) {
             result = "saturday";
             break;
         default:
-            result = "fail"
+            result = null;
             break;
     }
     return result;
